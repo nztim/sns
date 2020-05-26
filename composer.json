@@ -1,0 +1,24 @@
+{
+    "name": "nztim/sns",
+    "description": "SNS Message Handler",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "NZTim\\SNS\\": "src/",
+            "NZTim\\SNS\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.0",
+        "psr/log": "^1.1"
+    },
+    "authors": [
+        {
+            "name": "Tim",
+            "email": "tim@nztim.com"
+        }
+    ]
+}
