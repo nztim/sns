@@ -24,4 +24,9 @@ class NotificationEvent implements SnsEventInterface
     {
         return $this->data['Message'] ?? '';
     }
+
+    public function data(): array
+    {
+        return $this->data;
+    }
 }

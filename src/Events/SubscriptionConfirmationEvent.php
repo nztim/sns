@@ -29,4 +29,9 @@ class SubscriptionConfirmationEvent implements SnsEventInterface
     {
         return $this->data['SubscribeURL'] ?? '';
     }
+
+    public function data(): array
+    {
+        return $this->data;
+    }
 }
