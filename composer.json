@@ -3,7 +3,8 @@
     "description": "SNS Message Handler",
     "license": "MIT",
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "nztim/simplehttp": "^1.2"
     },
     "autoload": {
         "psr-4": {
@@ -15,6 +16,12 @@
         "phpunit/phpunit": "^8.0",
         "psr/log": "^1.1"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/nztim/simplehttp"
+        }
+    ],
     "authors": [
         {
             "name": "Tim",
