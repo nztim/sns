@@ -3,16 +3,16 @@
 namespace NZTim\SNS;
 
 use Illuminate\Events\Dispatcher;
-use Psr\Log\LoggerInterface;
+use NZTim\Logger\Logger;
 
 class SnsMessageReceivedHandler
 {
     private SnsMessageValidator $validator;
-    private LoggerInterface $logger;
+    private Logger $logger;
     private SnsMessageFactory $factory;
     private Dispatcher $dispatcher;
 
-    public function __construct(SnsMessageValidator $validator, LoggerInterface $logger, SnsMessageFactory $factory, Dispatcher $dispatcher)
+    public function __construct(SnsMessageValidator $validator, Logger $logger, SnsMessageFactory $factory, Dispatcher $dispatcher)
     {
         $this->validator = $validator;
         $this->logger = $logger;
@@ -24,7 +24,7 @@ class SnsMessageReceivedHandler
     {
         $result = $this->validator->validate($snsMessageRaw->data());
         if ($result->failed()) {
-            $this->logger->warning('Validation failure: ' . $result->message(), $snsMessageRaw->data());
+            $this->logger->warning('sns', 'Validation failure: ' . $result->message(), $snsMessageRaw->data());
             return;
         }
         $event = $this->factory->create($snsMessageRaw->data());

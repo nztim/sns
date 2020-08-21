@@ -4,7 +4,8 @@
     "license": "MIT",
     "require": {
         "php": ">=7.4",
-        "nztim/simplehttp": "^1.2"
+        "nztim/simplehttp": "^1.2",
+        "nztim/logger2": "^2.2"
     },
     "autoload": {
         "psr-4": {
@@ -17,6 +18,10 @@
         "psr/log": "^1.1"
     },
     "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/nztim/logger2"
+        },
         {
             "type": "vcs",
             "url": "https://github.com/nztim/simplehttp"

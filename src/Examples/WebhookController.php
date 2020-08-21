@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace NZTim\SNS\Examples;
 
 use Illuminate\Http\Request;
 use NZTim\Queue\QueueManager;
