@@ -15,6 +15,11 @@ class NotificationEvent implements SnsEventInterface
         return $event;
     }
 
+    public function arn(): string
+    {
+        return $this->data['TopicArn'] ?? '';
+    }
+
     public function type(): string
     {
         return 'Notification';

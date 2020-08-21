@@ -15,6 +15,11 @@ class UnsubscribeConfirmationEvent implements SnsEventInterface
         return $event;
     }
 
+    public function arn(): string
+    {
+        return $this->data['TopicArn'] ?? '';
+    }
+
     public function type(): string
     {
         return 'Unsubscribe Confirmation';
@@ -24,7 +29,7 @@ class UnsubscribeConfirmationEvent implements SnsEventInterface
     {
         return $this->data['Message'] ?? '';
     }
-    
+
     public function data(): array
     {
         return $this->data;
