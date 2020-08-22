@@ -18,7 +18,7 @@ class SnsMessageReceived
     public static function fromLaravelRequest(Request $request): SnsMessageReceived
     {
         $command = new SnsMessageReceived();
-        $command->data = json_encode($request->all());
+        $command->data = strval($request->getContent());
         return $command;
     }
 
