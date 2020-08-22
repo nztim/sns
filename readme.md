@@ -8,6 +8,9 @@ Package to receive, verify and process SNS webhooks into Events.
 
 ### Usage
 
-* Create a route to receive SNS requests, connect it to `NZTim\SNS\Examples\WebhookController` or your own handler
-* Handle SNS events as required: `SubscriptionConfirmationEvent`, `NotificationEvent`, and `UnsubscribeConfirmationEvent`
+* Create a route to receive SNS requests, connect it to `NZTim\SNS\WebhookController` (or your own handler).
+* Configure your EventServiceProvider to handle SNS events as required: `SubscriptionConfirmationEvent`, `UnsubscribeConfirmationEvent` and `NotificationEvent`.
 
+### Upgrading
+
+* 2.0 - Moved WebhookController, removed example SnsEventServiceProvider and SnsLoggingListener - make sure they are not referenced 

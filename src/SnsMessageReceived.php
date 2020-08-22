@@ -2,8 +2,6 @@
 
 namespace NZTim\SNS;
 
-use Illuminate\Http\Request;
-
 class SnsMessageReceived
 {
     private string $data;
@@ -12,13 +10,6 @@ class SnsMessageReceived
     {
         $command = new SnsMessageReceived();
         $command->data = json_encode($data);
-        return $command;
-    }
-
-    public static function fromLaravelRequest(Request $request): SnsMessageReceived
-    {
-        $command = new SnsMessageReceived();
-        $command->data = strval($request->getContent());
         return $command;
     }
 
