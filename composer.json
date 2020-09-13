@@ -4,7 +4,7 @@
     "license": "MIT",
     "require": {
         "php": ">=7.4",
-        "nztim/simplehttp": "^1.2",
+        "nztim/simplehttp": "^2.0",
         "nztim/logger2": "^3.0"
     },
     "autoload": {
