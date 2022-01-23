@@ -3,9 +3,9 @@
     "description": "SNS Message Handler",
     "license": "MIT",
     "require": {
-        "php": ">=7.4",
-        "nztim/simplehttp": "^2.0",
-        "nztim/logger2": "^3.0"
+        "php": "^7.4|^8.0",
+        "nztim/simplehttp": "^3.0",
+        "nztim/laravel-systems": "^1.0"
     },
     "autoload": {
         "psr-4": {
@@ -20,7 +20,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/nztim/logger2"
+            "url": "https://github.com/nztim/laravel-systems"
         },
         {
             "type": "vcs",
