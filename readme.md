@@ -13,4 +13,5 @@ Package to receive, verify and process SNS webhooks into Events.
 
 ### Upgrading
 
+* 5.0 - Requires PHP8 and nztim/laravel-systems 2.0 (Laravel 9)
 * 2.0 - Moved WebhookController, removed example SnsEventServiceProvider and SnsLoggingListener - make sure they are not referenced 
