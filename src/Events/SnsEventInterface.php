@@ -5,11 +5,6 @@ namespace NZTim\SNS\Events;
 interface SnsEventInterface
 {
     public static function fromArray(array $data): SnsEventInterface;
-
-    public function arn(): string;
-    public function type(): string;
-    public function message(): string;
-    public function data(): array;
 }
 
 /*

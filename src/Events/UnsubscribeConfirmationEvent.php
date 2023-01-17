@@ -4,7 +4,9 @@ namespace NZTim\SNS\Events;
 
 class UnsubscribeConfirmationEvent implements SnsEventInterface
 {
-    private array $data;
+    public array $data;
+    public string $arn;
+    public string $message;
 
     private function __construct() {}
 
@@ -12,26 +14,8 @@ class UnsubscribeConfirmationEvent implements SnsEventInterface
     {
         $event = new UnsubscribeConfirmationEvent();
         $event->data = $data;
+        $event->arn = $data['TopicArn'] ?? '';
+        $event->message = $data['Message'] ?? '';
         return $event;
-    }
-
-    public function arn(): string
-    {
-        return $this->data['TopicArn'] ?? '';
-    }
-
-    public function type(): string
-    {
-        return 'Unsubscribe Confirmation';
-    }
-
-    public function message(): string
-    {
-        return $this->data['Message'] ?? '';
-    }
-
-    public function data(): array
-    {
-        return $this->data;
     }
 }

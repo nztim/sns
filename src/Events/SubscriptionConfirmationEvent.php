@@ -4,7 +4,10 @@ namespace NZTim\SNS\Events;
 
 class SubscriptionConfirmationEvent implements SnsEventInterface
 {
-    private array $data;
+    public array $data;
+    public string $arn;
+    public string $message;
+    public string $url;
 
     private function __construct() {}
 
@@ -12,31 +15,9 @@ class SubscriptionConfirmationEvent implements SnsEventInterface
     {
         $event = new SubscriptionConfirmationEvent();
         $event->data = $data;
+        $event->arn = $data['TopicArn'] ?? '';
+        $event->message = $data['Message'] ?? '';
+        $event->url = $data['SubscribeURL'] ?? '';
         return $event;
-    }
-
-    public function arn(): string
-    {
-        return $this->data['TopicArn'] ?? '';
-    }
-
-    public function type(): string
-    {
-        return 'Subscription Confirmation';
-    }
-
-    public function message(): string
-    {
-        return $this->data['Message'] ?? '';
-    }
-
-    public function confirmationUrl(): string
-    {
-        return $this->data['SubscribeURL'] ?? '';
-    }
-
-    public function data(): array
-    {
-        return $this->data;
     }
 }

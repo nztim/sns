@@ -4,7 +4,9 @@ namespace NZTim\SNS\Events;
 
 class NotificationEvent implements SnsEventInterface
 {
-    private array $data;
+    public array $data;
+    public string $arn;
+    public string $message;
 
     private function __construct() {}
 
@@ -12,26 +14,8 @@ class NotificationEvent implements SnsEventInterface
     {
         $event = new NotificationEvent();
         $event->data = $data;
+        $event->arn = $data['TopicArn'] ?? '';
+        $event->message = $data['Message'] ?? '';
         return $event;
-    }
-
-    public function arn(): string
-    {
-        return $this->data['TopicArn'] ?? '';
-    }
-
-    public function type(): string
-    {
-        return 'Notification';
-    }
-
-    public function message(): string
-    {
-        return $this->data['Message'] ?? '';
-    }
-
-    public function data(): array
-    {
-        return $this->data;
     }
 }
