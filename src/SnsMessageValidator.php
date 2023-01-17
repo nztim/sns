@@ -21,7 +21,7 @@ class SnsMessageValidator
         // Check the URL
         $url = $data['SigningCertURL'] ?? '';
         $validateResult = $this->validateUrl($url);
-        if ($validateResult->failed()) {
+        if (!$validateResult->success) {
             return $validateResult;
         }
         // Get the certificate and cache for a while
@@ -51,7 +51,7 @@ class SnsMessageValidator
         if (($parsed['scheme'] ?? '') !== 'https') {
             return Result::createFailed('Invalid certificate scheme: ' . $url);
         }
-        if (substr($url, -4) !== '.pem') {
+        if (!str_ends_with($url, '.pem')) {
             return Result::createFailed('Invalid certificate URL filename: ' . $url);
         }
         if (!preg_match('/^sns\.[a-zA-Z0-9\-]{3,}\.amazonaws\.com(\.cn)?$/', $parsed['host'])) {
@@ -80,5 +80,4 @@ class SnsMessageValidator
         }
         return $stringToSign;
     }
-
 }

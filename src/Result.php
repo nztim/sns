@@ -4,8 +4,8 @@ namespace NZTim\SNS;
 
 class Result
 {
-    private bool $success;
-    private string $message;
+    public readonly bool $success;
+    public readonly string $message;
 
     private function __construct() {}
 
@@ -23,20 +23,5 @@ class Result
         $result->success = false;
         $result->message = $message;
         return $result;
-    }
-
-    public function success(): bool
-    {
-        return $this->success;
-    }
-
-    public function failed(): bool
-    {
-        return !$this->success;
-    }
-
-    public function message(): string
-    {
-        return $this->message;
     }
 }

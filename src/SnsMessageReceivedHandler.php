@@ -20,14 +20,14 @@ class SnsMessageReceivedHandler
         $this->dispatcher = $dispatcher;
     }
 
-    public function handle(SnsMessageReceived $snsMessageRaw): void
+    public function handle(SnsMessageReceived $messageReceived): void
     {
-        $result = $this->validator->validate($snsMessageRaw->data());
-        if ($result->failed()) {
-            $this->logger->warning('sns', 'Validation failure: ' . $result->message(), $snsMessageRaw->data());
+        $result = $this->validator->validate($messageReceived->data);
+        if (!$result->success) {
+            $this->logger->warning('sns', 'Validation failure: ' . $result->message, $messageReceived->data);
             return;
         }
-        $event = $this->factory->create($snsMessageRaw->data());
+        $event = $this->factory->create($messageReceived->data);
         $this->dispatcher->dispatch($event);
     }
 }

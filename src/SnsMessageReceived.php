@@ -4,19 +4,18 @@ namespace NZTim\SNS;
 
 class SnsMessageReceived
 {
-    private string $data;
+    public array $data;
 
-    public static function fromArray(array $data): SnsMessageReceived
+    public static function fromString(string $message): ?SnsMessageReceived
     {
+        $decoded = json_decode($message, true);
+        if (!is_array($decoded)) {
+            return null;
+        }
         $command = new SnsMessageReceived();
-        $command->data = json_encode($data);
+        $command->data = $decoded;
         return $command;
     }
 
     private function __construct() {}
-
-    public function data(): array
-    {
-        return json_decode($this->data, true);
-    }
 }

@@ -2,7 +2,9 @@
 
 namespace NZTim\SNS\Tests;
 
+use GuzzleHttp\Psr7\Response;
 use NZTim\SimpleHttp\Http;
+use NZTim\SimpleHttp\HttpResponse;
 use NZTim\SNS\SnsMessageValidator;
 use Tests\TestCase;
 
@@ -11,22 +13,22 @@ class SnsMessageValidatorTest extends TestCase
     /** @test */
     public function invalid_url()
     {
-        $validator = app(SnsMessageValidator::class);
+        $validator = $this->getValidator();
         //
         $data = ['SigningCertURL' => 'http://sns.us-west-2.amazonaws.com/SimpleNotificationService-f3ecfb7224c7233fe7bb5f59f96de52f.pem'];
         $result = $validator->validate($data);
-        $this->assertFalse($result->success());
-        $this->assertTrue(str_contains($result->message(), 'Invalid certificate scheme'));
+        $this->assertFalse($result->success);
+        $this->assertTrue(str_contains($result->message, 'Invalid certificate scheme'));
         //
         $data = ['SigningCertURL' => 'https://sns.us-west-2.amazonaws.com/SimpleNotificationService'];
         $result = $validator->validate($data);
-        $this->assertFalse($result->success());
-        $this->assertTrue(str_contains($result->message(), 'Invalid certificate URL filename'));
+        $this->assertFalse($result->success);
+        $this->assertTrue(str_contains($result->message, 'Invalid certificate URL filename'));
         //
         $data = ['SigningCertURL' => 'https://sns.us-west-2.attacker.com/SimpleNotificationService-f3ecfb7224c7233fe7bb5f59f96de52f.pem'];
         $result = $validator->validate($data);
-        $this->assertFalse($result->success());
-        $this->assertTrue(str_contains($result->message(), 'Invalid hostname'));
+        $this->assertFalse($result->success);
+        $this->assertTrue(str_contains($result->message, 'Invalid hostname'));
     }
 
     /** @test */
@@ -34,29 +36,30 @@ class SnsMessageValidatorTest extends TestCase
     {
         $this->mock(Http::class, function ($mock) {
             // Only one call for two verifications
-            $mock->shouldReceive('get')->once()->andReturn(new ResponseMock());
+            $mock->shouldReceive('get')->once()->andReturn(new ResponseMock(new Response()));
         });
-        $validator = app(SnsMessageValidator::class);
+        $validator = $this->getValidator();
         $data = $this->notification();
         $result = $validator->validate($data);
-        $this->assertTrue($result->success());
+        $this->assertTrue($result->success);
         $result = $validator->validate($data);
-        $this->assertTrue($result->success());
+        $this->assertTrue($result->success);
     }
 
     /** @test */
     public function checks_signature_correctly()
     {
         $this->mock(Http::class, function ($mock) {
-            $mock->shouldReceive('get')->once()->andReturn(new ResponseMock());
+            $mock->shouldReceive('get')->once()->andReturn(new ResponseMock(new Response()));
         });
+        /** @var $validator SnsMessageValidator */
         $validator = app(SnsMessageValidator::class);
         $data = $this->notification();
         $result = $validator->validate($data);
-        $this->assertTrue($result->success());
+        $this->assertTrue($result->success);
         $data['Message'] .= 'a change';
         $result = $validator->validate($data);
-        $this->assertFalse($result->success());
+        $this->assertFalse($result->success);
     }
 
     /** @test */
@@ -69,16 +72,21 @@ class SnsMessageValidatorTest extends TestCase
         // Then export the public and private keys
         // Fortunately, openssl_get_publickey() works with both PEM public keys and certificates
         $this->mock(Http::class, function ($mock) {
-            $mock->shouldReceive('get')->once()->andReturn(new ResponseMock());
+            $mock->shouldReceive('get')->once()->andReturn(new ResponseMock(new Response()));
         });
         $data = $this->notification();
-        $validator = app(SnsMessageValidator::class);
+        $validator = $this->getValidator();
         $stringToSign = $validator->stringToSign($data);
         $signature = '';
         $this->assertTrue(openssl_sign($stringToSign, $signature, $this->privateKey(), OPENSSL_ALGO_SHA1));
         $data['Signature'] = base64_encode($signature);
         $result = $validator->validate($data);
-        $this->assertTrue($result->success());
+        $this->assertTrue($result->success);
+    }
+
+    protected function getValidator(): SnsMessageValidator
+    {
+        return app(SnsMessageValidator::class);
     }
 
     private function notification(): array
@@ -132,7 +140,7 @@ EOF;
     }
 }
 
-class ResponseMock
+class ResponseMock extends HttpResponse
 {
     public function body(): string
     {

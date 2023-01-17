@@ -13,16 +13,12 @@ class SnsMessageFactory
     public function create(array $data): SnsEventInterface
     {
         $type = $data['Type'] ?? '';
-        switch ($type) {
-            case 'SubscriptionConfirmation':
-                return SubscriptionConfirmationEvent::fromArray($data);
-            case 'Notification':
-                return NotificationEvent::fromArray($data);
-            case 'UnsubscribeConfirmation':
-                return UnsubscribeConfirmationEvent::fromArray($data);
-            default:
-                throw new RuntimeException('Unknown SNS Message Type: ' . $type);
-        }
+        return match ($type) {
+            'SubscriptionConfirmation' => SubscriptionConfirmationEvent::fromArray($data),
+            'Notification' => NotificationEvent::fromArray($data),
+            'UnsubscribeConfirmation' => UnsubscribeConfirmationEvent::fromArray($data),
+            default => throw new RuntimeException('Unknown SNS Message Type: ' . $type),
+        };
     }
 }
 
