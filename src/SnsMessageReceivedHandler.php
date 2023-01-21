@@ -4,6 +4,7 @@ namespace NZTim\SNS;
 
 use Illuminate\Events\Dispatcher;
 use NZTim\Logger\Logger;
+use NZTim\SNS\Events\SnsEventInterface;
 
 class SnsMessageReceivedHandler
 {
@@ -11,6 +12,7 @@ class SnsMessageReceivedHandler
     private Logger $logger;
     private SnsMessageFactory $factory;
     private Dispatcher $dispatcher;
+    private bool $dispatch;
 
     public function __construct(SnsMessageValidator $validator, Logger $logger, SnsMessageFactory $factory, Dispatcher $dispatcher)
     {
@@ -18,21 +20,27 @@ class SnsMessageReceivedHandler
         $this->logger = $logger;
         $this->factory = $factory;
         $this->dispatcher = $dispatcher;
+        $this->dispatch = true;
     }
 
-    public function handle(SnsMessageReceived $messageReceived): void
+    // Disable dispatch using this method (via Service provider) in order to handle the event manually rather than via dispatcher.
+    public function disableDispatch(): SnsMessageReceivedHandler
+    {
+        $this->dispatch = false;
+        return $this;
+    }
+
+    public function handle(SnsMessageReceived $messageReceived): ?SnsEventInterface
     {
         $result = $this->validator->validate($messageReceived->data);
         if (!$result->success) {
             $this->logger->warning('sns', 'Validation failure: ' . $result->message, $messageReceived->data);
-            return;
+            return null;
         }
         $event = $this->factory->create($messageReceived->data);
-        $this->dispatcher->dispatch($event);
+        if ($this->dispatch) {
+            $this->dispatcher->dispatch($event);
+        }
+        return $event;
     }
 }
-/*
- * handle() method returns void because this is normally handled by the queue so return value isn't used.
- * Similarly the event dispatch is here so that the controller can queue the whole thing and forget about it.
- * Any action to be taken as a result of the message happens via the event listeners (if any).
- */
