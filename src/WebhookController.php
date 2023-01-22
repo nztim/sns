@@ -16,12 +16,11 @@ class WebhookController
     public function handle()
     {
         $body = request()->getContent();
-        $smr = SnsMessageReceived::fromString($body);
-        if (!$smr instanceof SnsMessageReceived) {
+        if (!is_array(json_decode($body, true))) {
             log_info('sns', 'Unable to decode message: ' . $body);
             return response()->json(['result' => 'Unable to process'], 400);
         }
-        $this->qm->add($smr);
+        $this->qm->add(new SnsWebhook($body));
         return response()->json(['result' => 'OK']);
     }
 }

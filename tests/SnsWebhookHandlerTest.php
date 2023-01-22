@@ -3,38 +3,27 @@
 namespace NZTim\SNS\Tests;
 
 use Illuminate\Events\Dispatcher;
-use Illuminate\Support\Facades\Event;
-use NZTim\SNS\Events\NotificationEvent;
-use NZTim\SNS\SnsMessageReceived;
-use NZTim\SNS\SnsMessageReceivedHandler;
 use NZTim\SNS\SnsMessageValidator;
+use NZTim\SNS\SnsWebhook;
+use NZTim\SNS\SnsWebhookHandler;
 use Tests\TestCase;
 
-class SnsMessageReceivedHandlerTest extends TestCase
+class SnsWebhookHandlerTest extends TestCase
 {
     /** @test */
     public function dispatches_event()
     {
-        $smr = SnsMessageReceived::fromString(json_encode($this->notification()));
+        $webhook = new SnsWebhook(json_encode($this->notification()));
         $this->mock(SnsMessageValidator::class)->shouldReceive('validate')->andReturn(\NZTim\SNS\Result::createSuccess());
-        $this->mock(Dispatcher::class)->shouldReceive('dispatch');
-        /** @var SnsMessageReceivedHandler $handler */
-        $handler = app(SnsMessageReceivedHandler::class);
-        $event = $handler->handle($smr);
-        $this->assertTrue($event instanceof NotificationEvent);
+        $this->mock(Dispatcher::class)->shouldReceive('dispatch')->once();
+        $handler = $this->getHandler();
+        $handler->handle($webhook);
+        $this->assertTrue(true); // Test is shouldReceive('dispatch')
     }
 
-    /** @test */
-    public function does_not_dispatch_event()
+    private function getHandler(): SnsWebhookHandler
     {
-        $smr = SnsMessageReceived::fromString(json_encode($this->notification()));
-        $this->mock(SnsMessageValidator::class)->shouldReceive('validate')->andReturn(\NZTim\SNS\Result::createSuccess());
-        $this->mock(Dispatcher::class)->shouldNotReceive('dispatch');
-        /** @var SnsMessageReceivedHandler $handler */
-        $handler = app(SnsMessageReceivedHandler::class);
-        $handler->disableDispatch();
-        $event = $handler->handle($smr);
-        $this->assertTrue($event instanceof NotificationEvent);
+        return app(SnsWebhookHandler::class);
     }
 
     private function notification(): array

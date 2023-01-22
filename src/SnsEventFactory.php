@@ -8,10 +8,22 @@ use NZTim\SNS\Events\SubscriptionConfirmationEvent;
 use NZTim\SNS\Events\UnsubscribeConfirmationEvent;
 use RuntimeException;
 
-class SnsMessageFactory
+class SnsEventFactory
 {
-    public function create(array $data): SnsEventInterface
+    private SnsMessageValidator $validator;
+
+    public function __construct(SnsMessageValidator $validator)
     {
+        $this->validator = $validator;
+    }
+
+    public function process(array $data): ?SnsEventInterface
+    {
+        $result = $this->validator->validate($data);
+        if (!$result->success) {
+            log_warning('sns', 'Validation failure: ' . $result->message, $data);
+            return null;
+        }
         $type = $data['Type'] ?? '';
         return match ($type) {
             'SubscriptionConfirmation' => SubscriptionConfirmationEvent::fromArray($data),

@@ -5,18 +5,20 @@ namespace NZTim\SNS\Tests;
 use NZTim\SNS\Events\NotificationEvent;
 use NZTim\SNS\Events\SubscriptionConfirmationEvent;
 use NZTim\SNS\Events\UnsubscribeConfirmationEvent;
-use NZTim\SNS\SnsMessageFactory;
+use NZTim\SNS\SnsEventFactory;
+use NZTim\SNS\SnsMessageValidator;
 use RuntimeException;
 use Tests\TestCase;
 
-class SnsMessageFactoryTest extends TestCase
+class SnsEventFactoryTest extends TestCase
 {
     /** @test */
     public function subscription_confirmation()
     {
         $data = $this->subConMessage();
+        $this->mock(SnsMessageValidator::class)->shouldReceive('validate')->andReturn(\NZTim\SNS\Result::createSuccess());
         /** @var SubscriptionConfirmationEvent $event */
-        $event = $this->getMessageFactory()->create($data);
+        $event = $this->getEventFactory()->process($data);
         $this->assertTrue($event instanceof SubscriptionConfirmationEvent);
         $this->assertEquals("arn:aws:sns:us-west-2:123456789012:MyTopic", $event->arn);
         $this->assertTrue(str_starts_with($event->message, "You have chosen to subscribe to the topic arn:aws:sns:us-west-2:123456789012"));
@@ -27,8 +29,9 @@ class SnsMessageFactoryTest extends TestCase
     public function unsub_confirmation()
     {
         $data = $this->unsubConMessage();
+        $this->mock(SnsMessageValidator::class)->shouldReceive('validate')->andReturn(\NZTim\SNS\Result::createSuccess());
         /** @var UnsubscribeConfirmationEvent $event */
-        $event = $this->getMessageFactory()->create($data);
+        $event = $this->getEventFactory()->process($data);
         $this->assertTrue($event instanceof UnsubscribeConfirmationEvent);
         $this->assertEquals("arn:aws:sns:us-west-2:123456789012:MyTopic", $event->arn);
         $this->assertTrue(str_starts_with($event->message, "You have chosen to deactivate subscription arn:aws:sns:us-west-2:123456789012:MyTopic:2bcfbf39-05c3-41de-beaa-fcfcc21c8f55"));
@@ -38,8 +41,9 @@ class SnsMessageFactoryTest extends TestCase
     public function notification()
     {
         $data = $this->notificationMessage();
+        $this->mock(SnsMessageValidator::class)->shouldReceive('validate')->andReturn(\NZTim\SNS\Result::createSuccess());
         /** @var NotificationEvent $event */
-        $event = $this->getMessageFactory()->create($data);
+        $event = $this->getEventFactory()->process($data);
         $this->assertTrue($event instanceof NotificationEvent);
         $this->assertEquals("arn:aws:sns:us-west-2:123456789012:MyTopic", $event->arn);
         $this->assertEquals("Hello world!", $event->message);
@@ -49,13 +53,14 @@ class SnsMessageFactoryTest extends TestCase
     public function unknown_message()
     {
         $data = ['Type' => 'Something unexpected', 'foo' => 'bar'];
+        $this->mock(SnsMessageValidator::class)->shouldReceive('validate')->andReturn(\NZTim\SNS\Result::createSuccess());
         $this->expectException(RuntimeException::class);
-        $this->getMessageFactory()->create($data);
+        $this->getEventFactory()->process($data);
     }
 
-    private function getMessageFactory(): SnsMessageFactory
+    private function getEventFactory(): SnsEventFactory
     {
-        return app(SnsMessageFactory::class);
+        return app(SnsEventFactory::class);
     }
 
     private function subConMessage(): array

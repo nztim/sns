@@ -4,8 +4,8 @@ namespace NZTim\SNS;
 
 class Result
 {
-    public readonly bool $success;
-    public readonly string $message;
+    public bool $success;
+    public string $message;
 
     private function __construct() {}
 
