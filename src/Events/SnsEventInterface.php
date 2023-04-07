@@ -2,6 +2,11 @@
 
 namespace NZTim\SNS\Events;
 
+/**
+ * @property array $data;
+ * @property string $arn;
+ * @property string $message;
+ */
 interface SnsEventInterface
 {
     public static function fromArray(array $data): SnsEventInterface;
